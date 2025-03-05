@@ -11,8 +11,8 @@ const upload = multer({ dest: "uploads/" });
 // Create User
 const createOwner = async (req, res) => {
   try {
-    const { name, email, phone, flat_number } = req.body;
-    const newOwner = new Owner({ name, email, phone, flat_number });
+    const { name, email, phone, flat_number, complex_id } = req.body;
+    const newOwner = new Owner({ name, email, phone, flat_number, complex_id });
     await newOwner.save();
     res.status(201).json(newOwner);
   } catch (error) {
@@ -23,7 +23,11 @@ const createOwner = async (req, res) => {
 // Get All Users
 const getOwners = async (req, res) => {
   try {
-    const owners = await Owner.find();
+    const {complex_id } = req.body;
+    const owners = await Owner.find({ complex_id: complex_id });
+    if (owners.length === 0) {
+      return res.status(404).json({ message: "No owners found for this complex ID" });
+    }
     res.json(owners);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -68,7 +72,7 @@ const importOwners = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
   }
-
+  const { complex_number } = req.body; // Get flat_number from request body
   const filePath = req.file.path;
   const results = [];
 
@@ -82,6 +86,7 @@ const importOwners = async (req, res) => {
       }
 
       results.push({
+        complex_id :complex_number,
         name: data.name.trim(),
         email: data.email.trim(),
         phone: Number(data.phone), // Convert phone number to Number
@@ -107,4 +112,41 @@ const importOwners = async (req, res) => {
     });
 };
 
-module.exports = { createOwner, getOwners, getOwnerById, updateOwner, deleteOwner, importOwners, upload };
+// Get All Apartments
+const getOwnerByFlat = async (req, res) => {
+
+  try {
+    const { flat_number } = req.body; // Get flat_number from request body
+
+    if (!flat_number) {
+      return res.status(400).json({ message: "Flat number is required" });
+    }
+
+    const owner = await Owner.findOne({ flat_number });
+
+    if (!owner) {
+      return res.status(404).json({ message: "Owner not found" });
+    }
+
+    res.json({ owner });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+
+};
+
+// Get All Apartments
+const getApartments = async (req, res) => {
+
+  try {
+    const {complex_id } = req.body;
+    const flats = await Owner.find({complex_id}, "flat_number"); // Fetch only flat_number field
+    const flatNumbers = flats.map(flat => flat.flat_number); // Extract values
+    res.json({ flatNumbers });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+
+};
+
+module.exports = { createOwner, getOwners, getOwnerById, updateOwner, deleteOwner, importOwners, upload, getApartments, getOwnerByFlat };

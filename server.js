@@ -2,13 +2,11 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
-
-
-
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const ownerRoutes = require("./routes/ownerRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const complexRoutes = require("./routes/complexRoutes");
 
 dotenv.config();
 connectDB();
@@ -27,6 +25,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/owners", ownerRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/complex", complexRoutes);
 
 
 const PORT = process.env.PORT || 5000;
