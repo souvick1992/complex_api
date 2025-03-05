@@ -74,6 +74,8 @@ const importOwners = async (req, res) => {
   }
   const { complex_number } = req.body; // Get flat_number from request body
   const filePath = req.file.path;
+
+    console.log("Uploaded file path:", filePath);
   const results = [];
 
   fs.createReadStream(filePath)
