@@ -20,9 +20,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+    res.send("Hello API is running");
+});
+
 app.use("/api/users", userRoutes);
 app.use("/api/owners", ownerRoutes);
 app.use("/api/admin", adminRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 
