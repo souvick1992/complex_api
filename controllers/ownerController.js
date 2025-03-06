@@ -73,9 +73,8 @@ const importOwners = async (req, res) => {
     return res.status(400).json({ message: "Please upload a CSV file" });
   }
   const { complex_number } = req.body; // Get flat_number from request body
-  const filePath = req.file.path;
 
-    console.log("Uploaded file path:", filePath);
+  const filePath = req.file.path;
   const results = [];
 
   fs.createReadStream(filePath)
