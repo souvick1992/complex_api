@@ -81,10 +81,7 @@ const importOwners = async (req, res) => {
     .pipe(csvParser())
     .on("data", (data) => {
       // Validate that all required fields are present
-      if (!data.name || !data.email || !data.phone || !data.block || !data.flat_number) {
-        console.error("Skipping row due to missing required fields:", data);
-        return;
-      }
+   
 
       results.push({
         complex_id :complex_number,
